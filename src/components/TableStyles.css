@@ -1,0 +1,29 @@
+.table {
+    border-spacing: 0px;
+    background: #fff;
+    box-shadow: 0 1px 0 0 rgba(22, 29, 37, 0.05);
+    min-width: 500px;
+}
+  
+.cell {
+    border: 1px solid #f4f6f8;
+    padding: 4px;
+    text-align: left;
+}
+
+.table-wrapper {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scroll-container {
+    overflow-x: auto;
+}
+
+.paginator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
