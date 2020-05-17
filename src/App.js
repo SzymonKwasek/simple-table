@@ -46,7 +46,11 @@ function App() {
 
   return (
     <div className="App">
-        <Table headings={['id', 'name', 'city', 'totalIncome', 'averageIncome', 'lastMonthTotalIncome']} data={data}/>
+        <Table 
+          headings={['id', 'name', 'city', 'totalIncome', 'averageIncome', 'lastMonthTotalIncome']}
+          paginate
+          data={data}
+          />
     </div>
   );
 }

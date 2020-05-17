@@ -1,26 +1,28 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import './TableStyles.css'
+
+const BUTTONS_COUNT = 5
 
 const Paginator = ({onSubtract, onAdd, goToStart, goToEnd, pagesCount, page, setSpecificPage}) => {
 
-    const [pageButtons, setPageButtons] = useState(Array.from(Array(5)).map((item, index) => index + page))
+    const [pageButtons, setPageButtons] = useState(Array.from(Array(BUTTONS_COUNT)).map((item, index) => index + page))
 
 
     const goToStartOverride = () => {
         goToStart()
-        setPageButtons(Array.from(Array(5)).map((item, index) => index + 1))
+        setPageButtons(Array.from(Array(BUTTONS_COUNT)).map((item, index) => index + 1))
     }
 
     const goToEndOverride = () => {
         goToEnd()
-        setPageButtons(Array.from(Array(5)).map((item, index) => index + pagesCount - 4))
+        setPageButtons(Array.from(Array(BUTTONS_COUNT)).map((item, index) => index + (pagesCount - (BUTTONS_COUNT - 1))))
     }
 
     const onAddOverride = () => {
         if(page < pagesCount) {
             onAdd()
             if(page + 1 > pageButtons[2] && page + 2 < pagesCount) {
-                setPageButtons(Array.from(Array(5)).map((item, index) => index + page - 1))
+                setPageButtons(Array.from(Array(BUTTONS_COUNT)).map((item, index) => index + page - 1))
             }
         }
     }

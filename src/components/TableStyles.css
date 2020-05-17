@@ -14,12 +14,15 @@
 .table-wrapper {
     width: 100vw;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
 .scroll-container {
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
 }
 
 .paginator {

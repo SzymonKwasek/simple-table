@@ -59,11 +59,14 @@ const Table = (props) => {
     //----------------------------------------
 
     const paginateData = (data) => {
-        if(page === 1) {
-            return data.slice(0, page * ROWS_PER_PAGE)
-        } else {
-            return data.slice(((page - 1) * ROWS_PER_PAGE) , page * ROWS_PER_PAGE)
+        if(props.paginate) {
+            if(page === 1) {
+                return data.slice(0, page * ROWS_PER_PAGE)
+            } else {
+                return data.slice(((page - 1) * ROWS_PER_PAGE) , page * ROWS_PER_PAGE)
+            }
         }
+        return data
       }
 
     //----------------------------------------
@@ -137,13 +140,22 @@ const Table = (props) => {
 
     return (
         <div className={'table-wrapper'}>
+            <input onChange={onInputChange}/>
             <div className={'scroll-container'}>
-                <input onChange={onInputChange}/>
                 <table className={'table'}>
                     <thead>{renderHeader()}</thead>
                     <tbody>{renderBody}</tbody>
                 </table>
-                <Paginator onAdd={onAddPage} onSubtract={onSubtractPage} goToStart={() => setPage(1)} goToEnd={() => setPage(pagesCount)} pagesCount={pagesCount} page={page} setSpecificPage={(index) => setPage(index)}/>
+                {props.paginate &&
+                    <Paginator 
+                        onAdd={onAddPage} 
+                        onSubtract={onSubtractPage} 
+                        goToStart={() => setPage(1)} 
+                        goToEnd={() => setPage(pagesCount)} 
+                        pagesCount={pagesCount} 
+                        page={page} 
+                        setSpecificPage={(index) => setPage(index)}/>
+                }
             </div>
 
         </div>
