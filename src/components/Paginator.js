@@ -1,44 +1,71 @@
 import React, {useState, useEffect} from 'react'
 import './TableStyles.css'
 
-const Paginator = ({onSubtract, onAdd, pagesCount, page, setSpecificPage}) => {
+const Paginator = ({onSubtract, onAdd, goToStart, goToEnd, pagesCount, page, setSpecificPage}) => {
 
-    const [pageButtons, setPageButtons] = useState(Array.from(Array(6)))
+    const [pageButtons, setPageButtons] = useState(Array.from(Array(5)).map((item, index) => index + page))
 
-    const [offset, setOffset] = useState(1)
 
-    useEffect(() => {
-        // console.log(pagesCount)
-        // if(pagesCount < 6) {
-        //     setPageButtons(Array.from(Array(pagesCount)))
-        // } else {
-        //     setPageButtons(Array.from(Array(6)))
-        // }
-    }, [pagesCount])
+    const goToStartOverride = () => {
+        goToStart()
+        setPageButtons(Array.from(Array(5)).map((item, index) => index + 1))
+    }
 
-    // useEffect(() => {
-    //     console.log(page)
-    // }, [page])
+    const goToEndOverride = () => {
+        goToEnd()
+        setPageButtons(Array.from(Array(5)).map((item, index) => index + pagesCount - 4))
+    }
+
+    const onAddOverride = () => {
+        if(page < pagesCount) {
+            onAdd()
+            if(page + 1 > pageButtons[2] && page + 2 < pagesCount) {
+                setPageButtons(Array.from(Array(5)).map((item, index) => index + page - 1))
+            }
+        }
+    }
+
+    const onSubtractOverride = () => {
+        if(page > 1) {
+            onSubtract()
+            if(page - 1 < pageButtons[2] && pageButtons[0] != 1) {
+                setPageButtons(pageButtons.map(item => item - 1))
+            }
+        }
+
+    }
 
     return (
         <div className={'paginator'}>
-            <button onClick={onSubtract}>
-                <span>{'<'}</span>
-            </button>
+            <div>
+                <button onClick={goToStartOverride}>
+                    <span>{'<<'}</span>
+                </button>
+                <button onClick={onSubtractOverride}>
+                    <span>{'<'}</span>
+                </button>
+            </div>
+
             <div className={'page-buttons'}>
                 {
                     pageButtons.map((item, index) => {
                         return(
-                            <button key={index} onClick={() => setSpecificPage(index + offset)}>
-                                <span>{`${index + offset}`}</span>
+                            <button key={index} onClick={() => setSpecificPage(item)} style={{backgroundColor: item == page ? 'red' : 'gray'}}>
+                                <span>{`${item}`}</span>
                             </button>
                         )
                     })
                 }
             </div>
-            <button onClick={onAdd}>
-                <span>{'>'}</span>
-            </button>
+            <div>
+                <button onClick={onAddOverride}>
+                    <span>{'>'}</span>
+                </button>
+                <button onClick={goToEndOverride}>
+                    <span>{'>>'}</span>
+                </button>
+            </div>
+
         </div>
     )
 }

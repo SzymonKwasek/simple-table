@@ -16,7 +16,7 @@ const Table = (props) => {
 
     const checkIfSortedAsc = (arr, val) => arr.every((v,i,a) => !i || a[i-1][val] <= v[[val]]);
 
-    //ToDo: pagination buttons, sort change on desc, cleanup, styling
+    //ToDo: pagination buttons, cleanup, styling
 
     // useEffects-----------------------------
 
@@ -38,9 +38,6 @@ const Table = (props) => {
             } else {
                 sortedData = props.data.sort((a, b) => (a[sortValue.value] > b[sortValue.value]) ? 1 : -1)
             }
-            
- 
-            
             const paginatedData = paginateData(sortedData)
             prepareRows(paginatedData)
         }
@@ -146,7 +143,7 @@ const Table = (props) => {
                     <thead>{renderHeader()}</thead>
                     <tbody>{renderBody}</tbody>
                 </table>
-                <Paginator onAdd={onAddPage} onSubtract={onSubtractPage} pagesCount={pagesCount} page={page} setSpecificPage={(index) => setPage(index)}/>
+                <Paginator onAdd={onAddPage} onSubtract={onSubtractPage} goToStart={() => setPage(1)} goToEnd={() => setPage(pagesCount)} pagesCount={pagesCount} page={page} setSpecificPage={(index) => setPage(index)}/>
             </div>
 
         </div>
