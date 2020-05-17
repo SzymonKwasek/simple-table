@@ -32,7 +32,7 @@ function App() {
             lastMonthData.forEach(item => lastMonthTotalIncome = lastMonthTotalIncome + Number(item.value))
             incomes.forEach(item => totalIncome = totalIncome + Number(item.value)) //I am not using Array.reduce because its performance is lower than forEach.
             averageIncome = totalIncome / incomes.length
-            return {id: item.data.id, totalIncome: totalIncome.toFixed(2), averageIncome: averageIncome.toFixed(2), lastMonthTotalIncome: lastMonthTotalIncome.toFixed(2)}
+            return {id: item.data.id, totalIncome: Number(totalIncome.toFixed(2)), averageIncome: Number(averageIncome.toFixed(2)), lastMonthTotalIncome: Number(lastMonthTotalIncome.toFixed(2))}
         })
 
        dataToDisplay = dataToDisplay.map(item => {

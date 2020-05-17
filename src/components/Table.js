@@ -13,6 +13,11 @@ const Table = (props) => {
     const [searchString, setSearchString] = useState('')
     const [sortValue, setSortValue] = useState({value: '', desc: false})
 
+
+    const checkIfSortedAsc = (arr, val) => arr.every((v,i,a) => !i || a[i-1][val] <= v[[val]]);
+
+    //ToDo: pagination buttons, sort change on desc, cleanup, styling
+
     // useEffects-----------------------------
 
     useEffect(() => {
@@ -26,7 +31,16 @@ const Table = (props) => {
 
     useEffect(() => {
         if(props.data.length > 0) {
-            const sortedData = props.data.sort((a, b) => (a[sortValue.value] > b[sortValue.value]) ? 1 : -1)
+            let sortedData = []
+            const isSortedAsc = checkIfSortedAsc(props.data, sortValue.value)
+            if(isSortedAsc) {
+                sortedData = props.data.sort((a, b) => (a[sortValue.value] > b[sortValue.value]) ? -1 : 1)
+            } else {
+                sortedData = props.data.sort((a, b) => (a[sortValue.value] > b[sortValue.value]) ? 1 : -1)
+            }
+            
+ 
+            
             const paginatedData = paginateData(sortedData)
             prepareRows(paginatedData)
         }
