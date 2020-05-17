@@ -9,6 +9,7 @@ const Table = (props) => {
     const [rows, setRows] = useState([])
 
     const [page, setPage] = useState(1)
+    const [loading, setLoading] = useState(true)
     const [pagesCount, setPagesCount] = useState(0)
     const [searchString, setSearchString] = useState('')
     const [sortValue, setSortValue] = useState({value: '', desc: false})
@@ -22,6 +23,7 @@ const Table = (props) => {
 
     useEffect(() => {
         if(props.data.length > 0) {
+            setLoading(false)
             const pagesCount = (props.data.length / ROWS_PER_PAGE)
             setPagesCount(pagesCount)
             const paginatedData = paginateData(props.data)
@@ -140,24 +142,33 @@ const Table = (props) => {
 
     return (
         <div className={'table-wrapper'}>
-            <input onChange={onInputChange}/>
+            {
+               loading && <div className={'overlay'}/>
+            }
+            <input className={'search-input'} onChange={onInputChange}/>
             <div className={'scroll-container'}>
                 <table className={'table'}>
                     <thead>{renderHeader()}</thead>
-                    <tbody>{renderBody}</tbody>
+                    <tbody>
+                        {
+                            loading ?
+                                <div className={'loading'}/>
+                                :
+                                renderBody
+                        }
+                    </tbody>
                 </table>
-                {props.paginate &&
-                    <Paginator 
-                        onAdd={onAddPage} 
-                        onSubtract={onSubtractPage} 
-                        goToStart={() => setPage(1)} 
-                        goToEnd={() => setPage(pagesCount)} 
-                        pagesCount={pagesCount} 
-                        page={page} 
-                        setSpecificPage={(index) => setPage(index)}/>
-                }
             </div>
-
+            {props.paginate &&
+                <Paginator 
+                    onAdd={onAddPage} 
+                    onSubtract={onSubtractPage} 
+                    goToStart={() => setPage(1)} 
+                    goToEnd={() => setPage(pagesCount)} 
+                    pagesCount={pagesCount} 
+                    page={page} 
+                    setSpecificPage={(index) => setPage(index)}/>
+            }
         </div>
     )
 
