@@ -1,64 +1,43 @@
 import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+
 import TableCell from './TableCell'
 import Paginator from './Paginator'
+
+import { checkIfSortedAsc, searchFunction } from '../utils'
 
 const ROWS_PER_PAGE = 10
 
 const Table = (props) => {
 
     const [rows, setRows] = useState([])
-
     const [page, setPage] = useState(1)
     const [loading, setLoading] = useState(true)
     const [pagesCount, setPagesCount] = useState(0)
-    const [searchString, setSearchString] = useState('')
-    const [sortValue, setSortValue] = useState({value: '', desc: false})
 
+    const [innerData, setInnerData] = useState([])
 
-    const checkIfSortedAsc = (arr, val) => arr.every((v,i,a) => !i || a[i-1][val] <= v[[val]]);
-
-    //ToDo: pagination buttons, cleanup, styling
 
     // useEffects-----------------------------
 
     useEffect(() => {
         if(props.data.length > 0) {
             setLoading(false)
-            const pagesCount = (props.data.length / ROWS_PER_PAGE)
-            setPagesCount(pagesCount)
-            const paginatedData = paginateData(props.data)
-            prepareRows(paginatedData)
+            prepareData(props.data)
         }
-    }, [props.data, page])
+    }, [props.data])
 
     useEffect(() => {
-        if(props.data.length > 0) {
-            let sortedData = []
-            const isSortedAsc = checkIfSortedAsc(props.data, sortValue.value)
-            if(isSortedAsc) {
-                sortedData = props.data.sort((a, b) => (a[sortValue.value] > b[sortValue.value]) ? -1 : 1)
-            } else {
-                sortedData = props.data.sort((a, b) => (a[sortValue.value] > b[sortValue.value]) ? 1 : -1)
-            }
-            const paginatedData = paginateData(sortedData)
-            prepareRows(paginatedData)
-        }
-    }, [sortValue])
+        prepareData(innerData)
+    }, [page])
 
-    useEffect(() => {
-        const dataCopy = JSON.parse(JSON.stringify(props.data))
-        let foundElements = []
-        if(searchString.length > 0) {
-            foundElements = dataCopy.filter(item => {
-                return String(item.id).includes(searchString) || item.name.toLowerCase().includes(searchString) || item.city.toLowerCase().includes(searchString)
-            })
-        } else {
-            foundElements = dataCopy
-        }
-        const paginatedData = paginateData(foundElements)
-        prepareRows(paginatedData)
-    }, [searchString])
     //----------------------------------------
+
+    // Prepare data handlers ------------------
+    const prepareRows = (data) => {
+        const rows = data.map(item => Object.values(item))
+        setRows(rows)
+    }
 
     const paginateData = (data) => {
         if(props.paginate) {
@@ -71,32 +50,39 @@ const Table = (props) => {
         return data
       }
 
+    const prepareData = (data) => {
+        const pagesCount = (data.length / ROWS_PER_PAGE)
+        setPagesCount(pagesCount)
+
+        setInnerData(data)
+
+        const paginatedData = paginateData(data)
+        prepareRows(paginatedData)
+      }
     //----------------------------------------
 
-    // Paginator handlers --------------------
-    const onAddPage = () => {
-        if(page < pagesCount) setPage(page + 1)
-    }
-
-    const onSubtractPage = () => {
-        if(page > 1) setPage(page - 1)
-    }
-
-
-    const prepareRows = (data) => {
-        const rows = data.map(item => Object.values(item))
-        setRows(rows)
-    }
-    //----------------------------------------
-
-    // Filter functions ------------------------------------------------------------
+    // Filter and sorting handlers ------------------------------------------------------------
     const onInputChange = (e) => {
-        setSearchString(e.target.value.toLowerCase())
+        setPage(1)
+        const searchString = e.target.value.toLowerCase()
+        const dataCopy = JSON.parse(JSON.stringify(props.data)) // deep copy of props.data to prevent bad data manipulation
+        let foundElements = searchFunction(dataCopy, searchString)
+        prepareData(foundElements)
     }
 
-    const sortData = (content) => {
-        setSortValue({value: content, desc: !sortValue.desc})
+    const sortData = (value) => {
+        if(props.data.length > 0) {
+            let sortedData = []
+            const isSortedAsc = checkIfSortedAsc(innerData, value)
+            if(isSortedAsc) {
+                sortedData = innerData.sort((a, b) => (a[value] > b[value]) ? -1 : 1)
+            } else {
+                sortedData = innerData.sort((a, b) => (a[value] > b[value]) ? 1 : -1)
+            }
+            prepareData(sortedData)
+        }
     }
+    
     // -----------------------------------------------------------------------------
 
     // Table render handlers------------------------------------------------------
@@ -145,33 +131,44 @@ const Table = (props) => {
             {
                loading && <div className={'overlay'}/>
             }
-            <input className={'search-input'} onChange={onInputChange}/>
+            <input
+                placeholder={'Search...'}
+                className={'search-input'} 
+                onChange={onInputChange}/>
             <div className={'scroll-container'}>
-                <table className={'table'}>
-                    <thead>{renderHeader()}</thead>
-                    <tbody>
-                        {
-                            loading ?
-                                <div className={'loading'}/>
-                                :
-                                renderBody
-                        }
-                    </tbody>
-                </table>
+                {
+                    loading ?
+                    <div className={'loading'}/>
+                    :
+                    <table className={'table'}>
+                        <thead>
+                            {renderHeader()}
+                        </thead>
+                        <tbody>       
+                            {renderBody}
+                        </tbody>
+                    </table>
+                }
             </div>
             {props.paginate &&
-                <Paginator 
-                    onAdd={onAddPage} 
-                    onSubtract={onSubtractPage} 
-                    goToStart={() => setPage(1)} 
-                    goToEnd={() => setPage(pagesCount)} 
+                <Paginator
                     pagesCount={pagesCount} 
                     page={page} 
-                    setSpecificPage={(index) => setPage(index)}/>
+                    setPage={(index) => setPage(index)}/>
             }
         </div>
     )
 
+}
+
+Table.defaultProps = {
+    paginate: false
+}
+
+Table.propTypes = {
+    headings: PropTypes.array.isRequired,
+    data: PropTypes.array.isRequired,
+    paginate: PropTypes.bool
 }
 
 export default Table
