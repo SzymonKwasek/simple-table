@@ -47,7 +47,7 @@ function App() {
   return (
     <div className="App">
         <Table 
-          headings={['id', 'name', 'city', 'totalIncome', 'averageIncome', 'lastMonthTotalIncome']}
+          headings={['id', 'name', 'city', 'total income', 'average income', 'last month income']}
           paginate
           data={data}
           />

@@ -60,7 +60,7 @@ const Paginator = ({pagesCount, page, setPage}) => {
         }
     }
     //------------------------------------------------------------------------
-    
+
     return (
         <div className={'paginator'}>
             <div>
@@ -79,7 +79,7 @@ const Paginator = ({pagesCount, page, setPage}) => {
                             <button 
                                 key={index} 
                                 onClick={() => setPage(item)} 
-                                style={{backgroundColor: item === page ? 'red' : 'gray', width: 30}}>
+                                style={{backgroundColor: item === page ? 'green' : 'gray', width: 30}}>
                                 <span>{`${item}`}</span>
                             </button>
                         )
